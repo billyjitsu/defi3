@@ -18,7 +18,7 @@ describe("FarmToken", function () {
     it("Should have the right balance of MomTokens", async () => {
         const ownerBalance = await mom.balanceOf(owner.address) 
         //work on this
-        //console.log(ownerBalance).to.String()
+        console.log(ethers.utils.formatEther(ownerBalance))
         expect (await mom.totalSupply()).to.equal(ownerBalance);
     })
 
