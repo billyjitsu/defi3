@@ -22,7 +22,7 @@ export function useMomBalance() {
   }, []);
 
   useEffect(() => {
-    fetchBalance();
+   fetchBalance()
   }, [fetchBalance]);
 
   return mbalance;

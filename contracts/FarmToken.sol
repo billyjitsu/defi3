@@ -18,6 +18,8 @@ contract FarmToken is ERC20 {
     //MommyToken private momtoken; // I believe this is done via IERC20 Var
 
     IERC20 public token;
+    //Look at each address for balances
+    mapping (address => uint256) public tokenBalanceOf;
 
     constructor(address _token) public ERC20("FarmToken", "FRM") {
         token = IERC20(_token);
@@ -28,13 +30,21 @@ contract FarmToken is ERC20 {
         return token.balanceOf(address(this));
     }
 
+    function ownerDepositBalance() public view returns (uint256) {
+        uint tempBalance = tokenBalanceOf[msg.sender];
+        return tempBalance;
+    }
 
-    function deposit(uint256 _amount) public {
+
+
+    function deposit(uint256 _amount) public payable {
         // Amount must be greater than zero
         require(_amount > 0, "amount cannot be 0");
 
         // Transfer MyToken to smart contract
         token.safeTransferFrom(msg.sender, address(this), _amount);  //address(this) refers to the address of the instance of the contract where the call is being made
+        //core function of the deposit
+        tokenBalanceOf[msg.sender] = tokenBalanceOf[msg.sender] + _amount;
         //Basically sending my stuff to the contract
 
         // Mint FarmToken to msg sender
@@ -45,7 +55,8 @@ contract FarmToken is ERC20 {
     function withdraw(uint256 _amount) public {
         // Burn FarmTokens from msg sender
        // _burn(msg.sender, _amount);
-
+        
+        require(_amount <= tokenBalanceOf[msg.sender], 'Error, not enough');
 
         // Mint FarmToken to msg sender - Transfer Earned Tokens
         _mint(msg.sender, _amount);  // currently matching input vs output
