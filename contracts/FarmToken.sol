@@ -36,6 +36,15 @@ contract FarmToken is ERC20 {
         return tempBalance;
     }
 
+    function ownerInterestBalance() public view returns (uint256) {
+        //Calculate interest earned
+        uint256 depositTime = block.timestamp - depositStart[msg.sender];
+        // Cal interest per second 500%   5%31577600 (seconds in 365.25 days)
+        //  583400891
+        uint256 interestPerSecond = 58340089 * (tokenBalanceOf[msg.sender] / 1e16);
+        uint256 interest = interestPerSecond * depositTime;
+        return interest;
+    }
 
 
     function deposit(uint256 _amount) public payable {
@@ -65,7 +74,7 @@ contract FarmToken is ERC20 {
         uint depositTime = block.timestamp - depositStart[msg.sender];
         // Cal interest per second 500%   5%31577600 (seconds in 365.25 days)
         //  583400891
-        uint interestPerSecond = 583400891 * (tokenBalanceOf[msg.sender] / 1e16);
+        uint interestPerSecond = 58340089 * (tokenBalanceOf[msg.sender] / 1e16);
         uint interest = interestPerSecond * depositTime;
 
 

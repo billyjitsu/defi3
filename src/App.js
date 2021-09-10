@@ -18,6 +18,7 @@ function App() {
   const [status, setStatus] = useState("");  // additional stuff
   const [tAmount, setTAmount] = useState("")
   const [oAmount, setOAmount] = useState(0)
+  const [iAmount, setIAmount] = useState(0)
   
  // const  momBalance = useMomBalance();
   
@@ -84,6 +85,23 @@ function App() {
 
   }
 
+  async function ownerInterestBalance () {
+    if (typeof window.ethereum !== 'undefined') {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      //const contract = new ethers.Contract(farmAddress, FarmToken.abi, provider)
+      const signer = provider.getSigner()
+      const contract = new ethers.Contract(farmAddress, FarmToken.abi, signer)
+      try {
+        const data = await contract.ownerInterestBalance()
+        console.log('data: ', ethers.utils.formatEther(data))
+        setIAmount(ethers.utils.formatEther(data))
+      } catch (err) {
+        console.log("Error: ", err)
+      }
+    }    
+
+  }
+
   async function approve () {
     if (typeof window.ethereum !== 'undefined') {
       await requestAccount()
@@ -105,7 +123,7 @@ function App() {
       await transaction.wait()
       balance()
       ownerDepositBalance ()
-      
+      ownerInterestBalance ()
     }    
   }
 
@@ -118,6 +136,7 @@ function App() {
       await transaction.wait()
       balance()
       ownerDepositBalance ()
+      ownerInterestBalance ()
 
   }
 
@@ -160,6 +179,7 @@ function App() {
     addWalletListener();
     balance()
     ownerDepositBalance ()
+    ownerInterestBalance ()
     console.log('useEffect Ran')
    }, [tAmount, oAmount]);
 
@@ -184,6 +204,7 @@ function App() {
         <p>
          <h1>Total Value Locked {tAmount} </h1>
          <h1>Your Deposited Balance {oAmount} </h1>
+         <h1>Interest Earned Balance {iAmount} </h1>
          
           
         </p>
