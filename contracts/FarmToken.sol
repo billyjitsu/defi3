@@ -20,6 +20,7 @@ contract FarmToken is ERC20 {
     IERC20 public token;
     //Look at each address for balances
     mapping (address => uint256) public tokenBalanceOf;
+    mapping(address => uint256) public depositStart;
 
     constructor(address _token) public ERC20("FarmToken", "FRM") {
         token = IERC20(_token);
@@ -47,6 +48,8 @@ contract FarmToken is ERC20 {
         tokenBalanceOf[msg.sender] = tokenBalanceOf[msg.sender] + _amount;
         //Basically sending my stuff to the contract
 
+        //Start the timer of deposit
+        depositStart[msg.sender] = depositStart[msg.sender] + block.timestamp;
         // Mint FarmToken to msg sender
         //_mint(msg.sender, _amount);
         //Just deposit and will build interest for now
@@ -58,10 +61,20 @@ contract FarmToken is ERC20 {
         
         require(_amount <= tokenBalanceOf[msg.sender], 'Error, not enough');
 
+        //Calculate interest earned
+        uint depositTime = block.timestamp - depositStart[msg.sender];
+        // Cal interest per second 500%   5%31577600 (seconds in 365.25 days)
+        //  583400891
+        uint interestPerSecond = 583400891 * (tokenBalanceOf[msg.sender] / 1e16);
+        uint interest = interestPerSecond * depositTime;
+
+
         // Mint FarmToken to msg sender - Transfer Earned Tokens
-        _mint(msg.sender, _amount);  // currently matching input vs output
+        _mint(msg.sender, interest);  // currently matching input vs output
         // Transfer MyTokens from this smart contract to msg sender
         token.safeTransfer(msg.sender, _amount);
+        tokenBalanceOf[msg.sender] = tokenBalanceOf[msg.sender] - _amount;
+        depositStart[msg.sender] =0;
     }
 
 
