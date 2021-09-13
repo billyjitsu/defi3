@@ -18,6 +18,7 @@ function App() {
   const [oAmount, setOAmount] = useState(0)
   const [iAmount, setIAmount] = useState(0)
   const [mAmount, setMAmount] = useState(0)
+  const [time, setTime] = useState(0)
   
 
   // play with this - request for meta?
@@ -81,6 +82,22 @@ function App() {
 
   }
 
+  async function checkTime () {
+    if (typeof window.ethereum !== 'undefined') {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner()
+      const contract = new ethers.Contract(farmAddress, FarmToken.abi, signer)
+      try {
+        const data = await contract.checkTime()
+        console.log('data: ', ethers.utils.formatEther(data))
+        setTime(data)
+      } catch (err) {
+        console.log("Error: ", err)
+      }
+    }    
+
+  }
+  /*
   async function ownerInterestBalance () {
     if (typeof window.ethereum !== 'undefined') {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -97,7 +114,7 @@ function App() {
     }    
 
   }
-
+*/
   async function approve () {
     if (typeof window.ethereum !== 'undefined') {
       await requestAccount()
@@ -119,7 +136,7 @@ function App() {
       await transaction.wait()
       balance()
       ownerDepositBalance ()
-      ownerInterestBalance ()
+     // ownerInterestBalance ()
     }    
   }
 
@@ -132,7 +149,7 @@ function App() {
       await transaction.wait()
       balance()
       ownerDepositBalance ()
-      ownerInterestBalance ()
+     // ownerInterestBalance ()
 
   }
 
@@ -175,7 +192,7 @@ function App() {
     addWalletListener();
     balance()
     ownerDepositBalance ()
-    ownerInterestBalance ()
+   // ownerInterestBalance ()
     mommyBalance ()
     console.log('useEffect Ran')
    }, [tAmount, oAmount]);
@@ -197,12 +214,13 @@ function App() {
       </button>
      
       <div className="content">
-        <h1>Invest your Money</h1>
+        <h1>Billy Coin Inc</h1>
           <p>
              <h2>Total Value Locked {tAmount} </h2>
           </p>
           
           <p>
+          <button onClick={checkTime}>Check time</button> 
             <button onClick={approve}>Approve</button> 
             <h3>Must Approve Before Deposit (1st time only)</h3>
           </p>
@@ -214,7 +232,7 @@ function App() {
                placeHolder="Deposit Amount"
              ></input>
          <p></p>
-         <h2>Interest Earned Balance {iAmount} </h2>
+         
          <h2>Your Deposited Balance {oAmount} </h2>
          <button onClick={withdraw}>Withdraw</button>
          <input
