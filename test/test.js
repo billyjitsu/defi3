@@ -32,7 +32,7 @@ describe("FarmToken", function () {
   describe("Check on Farm", () => {
     it("Should be able to approve and deposit", async () => {
       const previousBalance = await mom.balanceOf(owner.address)
-      await mom.approve(farm.address, 10000)
+      await mom.approve(farm.address, 1000000)
       await farm.deposit(20)
       const currentBalance = await mom.balanceOf(owner.address)
       // Just need to make sure that balance is not there
@@ -48,10 +48,49 @@ describe("FarmToken", function () {
       const currentBalance = await mom.balanceOf(owner.address)
       expect(currentBalance).to.equal(previousBalance)
       const dadAfter = await farm.balanceOf(owner.address)
-      expect(dadBefore).to.not.equal(dadAfter)
+      expect(dadBefore).to.equal(dadAfter)
     })
       
+    describe("check reward status", () => {
+      it("Should give no bonus if short deposit", async () => {
+        const previousBalance = await mom.balanceOf(owner.address)
+        const dadBefore = await farm.balanceOf(owner.address)
+        await mom.approve(farm.address, 10000)
+        await farm.deposit(20)
+        await farm.withdraw(20)
+        const currentBalance = await mom.balanceOf(owner.address)
+        expect(currentBalance).to.equal(previousBalance)
+        const dadAfter = await farm.balanceOf(owner.address)
+        expect(dadBefore).to.equal(dadAfter)
+      })
 
+      it("Should give small bonus if 1 day deposit", async () => {
+        const previousBalance = await mom.balanceOf(owner.address)
+        const dadBefore = await farm.balanceOf(owner.address)
+        await mom.approve(farm.address, 10000)
+        await farm.deposit(20)
+        await network.provider.send("evm_increaseTime", [86401])
+        await farm.withdraw(20)
+        const currentBalance = await mom.balanceOf(owner.address)
+        expect(currentBalance).to.equal(previousBalance)
+        const dadAfter = await farm.balanceOf(owner.address)
+        expect(dadBefore).to.not.equal(dadAfter)
+      })
+
+      it("Should give large bonus if 1 week deposit", async () => {
+        const previousBalance = await mom.balanceOf(owner.address)
+        const dadBefore = await farm.balanceOf(owner.address)
+        await mom.approve(farm.address, 10000)
+        await farm.deposit(20)
+        await network.provider.send("evm_increaseTime", [604801])
+        await farm.withdraw(20)
+        const currentBalance = await mom.balanceOf(owner.address)
+        expect(currentBalance).to.equal(previousBalance)
+        const dadAfter = await farm.balanceOf(owner.address)
+        expect(dadBefore).to.not.equal(dadAfter)
+      })
+
+    })
 
 
   })

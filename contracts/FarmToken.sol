@@ -13,9 +13,9 @@ contract FarmToken is ERC20 {
     //   using SafeMath for uint256; // As of Solidity v0.8.0, mathematical operations can be done safely without the need for SafeMath
     using Address for address;
     using SafeERC20 for IERC20;
-    //assign the token Contract to a variable
-    //MommyToken private momtoken; // I believe this is done via IERC20 Var
-    uint256 bonus = 5 * 10 **18;
+    uint week = 604800;
+    uint day = 86400;
+    uint256 bonus = 2 * 10 **18;
     IERC20 public token;
     //Look at each address for balances
     mapping (address => uint256) public tokenBalanceOf;
@@ -24,7 +24,10 @@ contract FarmToken is ERC20 {
     // for testing purposes
     address public owner;
 
-    constructor(address _token) public ERC20("FarmToken", "FRM") {
+    event Deposit(address indexed user, uint mtokenAmount, uint timeStart);
+    event Withdraw(address indexed user, uint mtokenAmount, uint depositTime);
+
+    constructor(address _token) public ERC20("DadToken", "DAD") {
         token = IERC20(_token);
         //own the contract for failures
         owner = msg.sender;
@@ -72,40 +75,42 @@ contract FarmToken is ERC20 {
         //Basically sending my stuff to the contract
 
         tokenBalanceOf[msg.sender] = tokenBalanceOf[msg.sender] + _amount;
-        
-        // Mint FarmToken to msg sender
-        //_mint(msg.sender, _amount);
-        //Just deposit and will build interest for now
+        emit Deposit(msg.sender, _amount, block.timestamp); 
     }
 
-    function withdraw(uint256 _amount) public {
-        // Burn FarmTokens from msg sender
-       // _burn(msg.sender, _amount);
-        
+    function withdraw(uint256 _amount) public { 
         require(_amount <= tokenBalanceOf[msg.sender], 'Error, not enough');
-        
+
+        uint depositTime = block.timestamp - depositStart[msg.sender]; 
         //Calculate interest earned
     //    uint256 depositTime = block.timestamp - depositStart[msg.sender];
         // Cal interest per second 500%   5%31577600 (seconds in 365.25 days)
         //  583400891
     //    uint256 interestPerSecond = 58340089 * (tokenBalanceOf[msg.sender] / 1e16);
     //    uint256 interest = interestPerSecond * depositTime;
-        console.log("Deposit Start:", depositStart[msg.sender]);
-        console.log("Primary Deposit:", block.timestamp);
+      //  console.log("Deposit Start:", depositStart[msg.sender]);
 
-        if(depositStart[msg.sender] <= block.timestamp - 60){
+        //If deposit more than a week it can double
+        if(depositStart[msg.sender] <= block.timestamp - week){
             uint bigBonus = _amount + bonus;
-        // Mint FarmToken to msg sender - Transfer Earned Tokens
-        _mint(msg.sender, bigBonus);  // currently matching input vs output
+            // Mint FarmToken to msg sender - Transfer Earned Tokens
+            _mint(msg.sender, bigBonus);  // currently matching input vs output
+        }   // if they didn't make the week but at least a few days
+            else if(depositStart[msg.sender] <= block.timestamp - day) {
+             _mint(msg.sender, bonus);
+        }   // They immediately pull out
+             else {
+                // no mint
         }
-        /* else{
-        _mint(msg.sender, _amount/10);
-        } */
         // Transfer MyTokens from this smart contract to msg sender
         token.safeTransfer(msg.sender, _amount);
+        //Update Balance
         tokenBalanceOf[msg.sender] = tokenBalanceOf[msg.sender] - _amount;
         //reset deposit time
         depositStart[msg.sender] = 0;
+
+        // send event
+        emit Withdraw(msg.sender, _amount, depositTime);
     }
 
     // work on a possible master withdraw with owner to save funds
