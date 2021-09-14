@@ -82,14 +82,7 @@ contract FarmToken is ERC20 {
         require(_amount <= tokenBalanceOf[msg.sender], 'Error, not enough');
 
         uint depositTime = block.timestamp - depositStart[msg.sender]; 
-        //Calculate interest earned
-    //    uint256 depositTime = block.timestamp - depositStart[msg.sender];
-        // Cal interest per second 500%   5%31577600 (seconds in 365.25 days)
-        //  583400891
-    //    uint256 interestPerSecond = 58340089 * (tokenBalanceOf[msg.sender] / 1e16);
-    //    uint256 interest = interestPerSecond * depositTime;
-      //  console.log("Deposit Start:", depositStart[msg.sender]);
-
+    
         //If deposit more than a week it can double
         if(depositStart[msg.sender] <= block.timestamp - week){
             uint bigBonus = _amount + bonus;
@@ -113,6 +106,12 @@ contract FarmToken is ERC20 {
         emit Withdraw(msg.sender, _amount, depositTime);
     }
 
+    /*
     // work on a possible master withdraw with owner to save funds
+    function withdrawMaster(uint256 _amount) public { 
+        require(msg.sender == owner);
+
+    }
+    */
 
 }
