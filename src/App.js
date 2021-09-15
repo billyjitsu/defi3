@@ -224,7 +224,7 @@ function App() {
       </button>
      
       <div className="content">
-        <h1>Billy Coin Inc</h1>
+        <h1>Dad Investment Inc</h1>
           <p>
              <h4>Total Value Locked {tAmount} </h4>
           </p>
