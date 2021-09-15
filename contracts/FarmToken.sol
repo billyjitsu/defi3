@@ -48,17 +48,26 @@ contract FarmToken is ERC20 {
         return time;
     } 
 
- /*      function ownerInterestBalance() public view returns (uint256) {
-        //Calculate interest earned
-        uint256 depositTime = block.timestamp - depositStart[msg.sender];
-        // Cal interest per second 500%   5%31577600 (seconds in 365.25 days)
-        //  583400891
-        uint256 interestPerSecond = 58340089 * (tokenBalanceOf[msg.sender] / 1e16);
-        uint256 interest = interestPerSecond * depositTime;
-        return interest;
-    }
+    function checkBlockTime() public view returns (uint256) {
+        uint blockTime = block.timestamp;
+        return blockTime;
+    } 
 
-*/
+    function checkReward() public view returns (string memory) {
+        string memory notice = "null";
+        if(depositStart[msg.sender] <= block.timestamp - week){
+            notice = "Double Deposit and 2 dollars";
+        }   // if they didn't make the week but at least a few days
+            else if(depositStart[msg.sender] <= block.timestamp - day) {
+            notice = "2 dollar bonus";
+        }   // They immediately pull out
+             else {
+             notice = "No Bonus Yet! Wait a Day";
+        }
+
+        return notice;
+    }
+ 
     function deposit(uint256 _amount) public payable {
         // Amount must be greater than zero
         require(_amount > 0, "amount cannot be 0");

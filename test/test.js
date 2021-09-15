@@ -1,3 +1,4 @@
+const { messagePrefix } = require("@ethersproject/hash");
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
@@ -92,6 +93,41 @@ describe("FarmToken", function () {
 
     })
 
+    describe("Check on Reward Timing", () => { 
+      xit("Should give No Bonus if less than 1 day deposit", async () => {
+        
+        await mom.approve(farm.address, 10000)
+        await farm.deposit(20)
+        const reward = await farm.checkReward();
+        console.log(reward)
+        await network.provider.send("evm_increaseTime", [860])
+        console.log(reward)
+        await farm.withdraw(20)
+        
+        const currentBalance = await mom.balanceOf(owner.address)
+        //expect(currentBalance).to.equal(previousBalance)
+        const dadAfter = await farm.balanceOf(owner.address)
+        //expect(dadBefore).to.not.equal(dadAfter)
+      })
+
+      xit("Should give Small Bonus if more than 1 day deposit", async () => {
+        
+        await mom.approve(farm.address, 10000)
+        await farm.deposit(20)
+        const reward = await farm.checkReward();
+        console.log(reward)
+        await network.provider.send("evm_increaseTime", [86401])
+        console.log(reward)
+        await farm.withdraw(20)
+        
+        const currentBalance = await mom.balanceOf(owner.address)
+        //expect(currentBalance).to.equal(previousBalance)
+        const dadAfter = await farm.balanceOf(owner.address)
+        //expect(dadBefore).to.not.equal(dadAfter)
+      })
+
+
+    })
 
   })
 

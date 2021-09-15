@@ -1,13 +1,15 @@
 import {useState, useEffect } from 'react';
 import { ethers } from 'ethers'
-import './App.css';
 import FarmToken from './artifacts/contracts/FarmToken.sol/FarmToken.json'
 import MommyToken from './artifacts/contracts/MommyToken.sol/MommyToken.json'
 import { connectWallet, getCurrentWalletConnected } from "./utils/interact.js";
-//import { useMomBalance } from "./utils/useMomBalance.js";
+
+
 
 const momAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 const farmAddress = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512"
+
+
 
 function App() {
   const [amount, amountValue] = useState(0)
@@ -16,10 +18,26 @@ function App() {
   const [status, setStatus] = useState("");  // additional stuff
   const [tAmount, setTAmount] = useState("")
   const [oAmount, setOAmount] = useState(0)
+  //interest amount
   const [iAmount, setIAmount] = useState(0)
   const [mAmount, setMAmount] = useState(0)
-  const [time, setTime] = useState(0)
+  const [time, setTime] = useState("")
+  const [btime, setBtime] =  useState(0)
   
+  
+
+  /******** Time/ Date displays ******/
+  //let stamp = Date.now()
+  //console.log('stamp',stamp)
+  //need it in milliseconds (add 3 zeros on top of Eth 18)
+  let xtime = (time * 10 ** 21)
+  let currentTimestamp = (xtime)
+  let largeBonus = (xtime + 604800000) //add 3 zeros for milliseconds
+  let smallBonus = (xtime + 86400000)
+  let date = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(currentTimestamp)
+  let lBonusDate = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(largeBonus)
+  let sBonusDate = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(smallBonus)
+  /**************************************************************/
 
   // play with this - request for meta?
   async function requestAccount() {
@@ -90,31 +108,14 @@ function App() {
       try {
         const data = await contract.checkTime()
         console.log('data: ', ethers.utils.formatEther(data))
-        setTime(data)
+        setTime(ethers.utils.formatEther(data))
       } catch (err) {
         console.log("Error: ", err)
       }
     }    
-
   }
-  /*
-  async function ownerInterestBalance () {
-    if (typeof window.ethereum !== 'undefined') {
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-      //const contract = new ethers.Contract(farmAddress, FarmToken.abi, provider)
-      const signer = provider.getSigner()
-      const contract = new ethers.Contract(farmAddress, FarmToken.abi, signer)
-      try {
-        const data = await contract.ownerInterestBalance()
-        console.log('data: ', ethers.utils.formatEther(data))
-        setIAmount(ethers.utils.formatEther(data))
-      } catch (err) {
-        console.log("Error: ", err)
-      }
-    }    
 
-  }
-*/
+
   async function approve () {
     if (typeof window.ethereum !== 'undefined') {
       await requestAccount()
@@ -136,7 +137,6 @@ function App() {
       await transaction.wait()
       balance()
       ownerDepositBalance ()
-     // ownerInterestBalance ()
     }    
   }
 
@@ -149,8 +149,6 @@ function App() {
       await transaction.wait()
       balance()
       ownerDepositBalance ()
-     // ownerInterestBalance ()
-
   }
 
   const connectWalletPressed = async () => { //TODO: implement
@@ -192,9 +190,8 @@ function App() {
     addWalletListener();
     balance()
     ownerDepositBalance ()
-   // ownerInterestBalance ()
+    checkTime()
     mommyBalance ()
-    console.log('useEffect Ran')
    }, [tAmount, oAmount]);
 
   return (
@@ -216,29 +213,41 @@ function App() {
       <div className="content">
         <h1>Billy Coin Inc</h1>
           <p>
-             <h2>Total Value Locked {tAmount} </h2>
+             <h4>Total Value Locked {tAmount} </h4>
           </p>
-          
           <p>
-          <button onClick={checkTime}>Check time</button> 
             <button onClick={approve}>Approve</button> 
-            <h3>Must Approve Before Deposit (1st time only)</h3>
+            <h3 style = {{marginTop: -4}}>Must Approve Before Deposit (1st time only)
+            </h3>
           </p>
           
-          <h2>Available to Deposit {mAmount} </h2>
-           <button onClick={deposit}>Deposit</button>
+          <h2 style = {{marginTop: 60}} >Available to Deposit {mAmount} </h2>
+           <button style = {{marginTop: -10}} onClick={deposit}>Deposit</button>
             <input
                onChange={e => amountValue(e.target.value)}
                placeHolder="Deposit Amount"
              ></input>
-         <p></p>
+             <p></p>
+             <text >Deposit Date {date} </text>
+              
          
-         <h2>Your Deposited Balance {oAmount} </h2>
-         <button onClick={withdraw}>Withdraw</button>
+        
+         <h2 style = {{marginTop: 70}}>Your Deposited Balance {oAmount} </h2>
+         <button style = {{marginTop: -10}} onClick={withdraw}>Withdraw</button>
          <input
              onChange={e => pulloutValue(e.target.value)}
              placeHolder="Withdraw Amount"
-         ></input>
+         ></input>      
+         <p>
+             <text>
+                  For a $2 bonus withdraw after {sBonusDate} 
+             </text>
+             <p></p>
+             <text>
+                  For a double bonus withdraw after {lBonusDate}
+             </text>
+             
+          </p>
          </div>
       </div>
     </div>
