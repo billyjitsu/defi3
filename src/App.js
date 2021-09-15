@@ -9,8 +9,13 @@ import { connectWallet, getCurrentWalletConnected } from "./utils/interact.js";
 //const momAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 //const farmAddress = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512"
 
-const momAddress = "0xab5104400eB6b7a7d54120ad05169a2eeFaDD33b"
-const farmAddress = "0xa1F0d0867D27F4cbA61970C70799185EC400F4C6"
+//2nd deployments
+//const momAddress = "0xab5104400eB6b7a7d54120ad05169a2eeFaDD33b"
+//const farmAddress = "0xa1F0d0867D27F4cbA61970C70799185EC400F4C6"
+
+//3rd deployment
+const momAddress = "0x834c88758EeE333b01e52D6de610166E19E6CCd3"
+const farmAddress = "0x9089C663d109dcbBed28717a76B33DCe21b83fF2"
 
 function App() {
   const [amount, amountValue] = useState(0)

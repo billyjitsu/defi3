@@ -14,20 +14,24 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
+
+  /* Turn this off for previous deployment
   const MommyToken = await hre.ethers.getContractFactory("MommyToken");
   const mom = await MommyToken.deploy("MommyToken", "MOMMY");
 
   await mom.deployed();
+  */
 
  // const Bank = await hre.ethers.getContractFactory("Bank");
  // const bank = await Bank.deploy(mom.address);
 
  // await bank.deployed();
-
+  const momcontract = "0x834c88758EeE333b01e52D6de610166E19E6CCd3"
   const FarmToken = await hre.ethers.getContractFactory("FarmToken");
-  const farm = await FarmToken.deploy(mom.address);
+ // const farm = await FarmToken.deploy(mom.address);
+ const farm = await FarmToken.deploy(momcontract);
 
-  console.log("MommyToken deployed to:", mom.address);
+  //console.log("MommyToken deployed to:", mom.address);
  // console.log("Bank Contract deployed to:", bank.address)
   console.log("FarmToken deployed to:", farm.address); 
 
