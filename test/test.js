@@ -129,6 +129,11 @@ describe("FarmToken", function () {
 
     })
 
+    xdescribe("Rug Pull", () => { 
+
+
+    })
+
   })
 
 });

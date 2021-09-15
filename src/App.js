@@ -150,6 +150,18 @@ function App() {
       balance()
       ownerDepositBalance ()
   }
+/*
+  async function rugPull () {
+    if (typeof window.ethereum !== 'undefined') {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner()
+      const contract = new ethers.Contract(farmAddress, FarmToken.abi, signer)
+      const transaction = await contract.rugPull(ethers.utils.parseEther(pullout))
+      await transaction.wait()
+    }    
+
+  }
+*/
 
   const connectWalletPressed = async () => { //TODO: implement
     const walletResponse = await connectWallet();
@@ -216,7 +228,7 @@ function App() {
              <h4>Total Value Locked {tAmount} </h4>
           </p>
           <p>
-            <button onClick={approve}>Approve</button> 
+            <button onClick={approve}>Approve</button>  
             <h3 style = {{marginTop: -4}}>Must Approve Before Deposit (1st time only)
             </h3>
           </p>

